@@ -179,7 +179,7 @@ export default function Home() {
 
       {/* BLOQUE ROPA PERSONALIZADA */}
       <div style={{ padding: '40px 20px', textAlign: 'center', maxWidth: 900, margin: '40px auto', border: '2px solid #0070f3', borderRadius: 10, backgroundColor: '#f0f4f8' }}>
-        <img src="https://images.unsplash.com/photo-1591012911203-bc89d1c77ee6" alt="Ropa de trabajo personalizada" style={{ width: '100%', maxWidth: 300, marginBottom: 20, borderRadius: 8 }} loading="lazy"/>
+        <img src="https://www.workwearexpress.com/media/catalog/category/202504WorkwearEssentialsL2.png" alt="Ropa de trabajo personalizada" style={{ width: '100%', maxWidth: 300, marginBottom: 20, borderRadius: 8 }} loading="lazy"/>
         <h3 style={{ fontSize: 22, marginBottom: 10 }}>Encarga tu ropa de trabajo personalizada</h3>
         <p style={{ fontSize: 16, lineHeight: 1.5 }}>
           Danos tu marca y logo, elige el bordado y te hacemos tu traje de trabajo personalizado al gusto de tu empresa.  
