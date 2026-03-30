@@ -18,7 +18,7 @@ export default function Home() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    setClienteId(params.get('cliente_id') || 'de7295a6-0c55-4d3b-a48c-c0b08352ef38')
+    setClienteId(params.get('cliente_id') || 'e1cd0acd-e0b7-44da-90e9-86a765d35161')
   }, [])
 
   useEffect(() => {
