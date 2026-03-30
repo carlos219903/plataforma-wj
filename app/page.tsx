@@ -1,7 +1,7 @@
 'use client'
 export const dynamic = 'force-dynamic'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
 
 export default function Home() {
@@ -22,59 +22,69 @@ export default function Home() {
     setClienteId(params.get('cliente_id') || 'e1cd0acd-e0b7-44da-90e9-86a765d35161')
   }, [])
 
-  // Registrar visita solo cuando clienteId esté disponible
+  // Registrar visita en background
   useEffect(() => {
     if (!clienteId) return
-
     const insertarVisita = async () => {
-      const { error } = await supabase
-        .from('visitas')
-        .insert([{ pagina: window.location.href, cliente_id: clienteId }])
-
-      if (error) {
+      try {
+        await supabase.from('visitas').insert([{ pagina: window.location.href, cliente_id: clienteId }])
+      } catch (error: any) {
         console.log('ERROR VISITA:', error)
-        alert(error.message)
       }
     }
-
     insertarVisita()
   }, [clienteId])
 
-  // Detectar dispositivo móvil
+  // Detectar dispositivo móvil con debounce
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    let timeout: NodeJS.Timeout
+    const checkMobile = () => {
+      clearTimeout(timeout)
+      timeout = setTimeout(() => setIsMobile(window.innerWidth < 768), 150)
+    }
     checkMobile()
     window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    return () => {
+      clearTimeout(timeout)
+      window.removeEventListener('resize', checkMobile)
+    }
   }, [])
 
-  const irFormulario = () => formRef.current?.scrollIntoView({ behavior: 'smooth' })
+  const irFormulario = useCallback(() => formRef.current?.scrollIntoView({ behavior: 'smooth' }), [])
 
-  const autoResize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const autoResize = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     e.target.style.height = 'auto'
     e.target.style.height = e.target.scrollHeight + 'px'
-  }
+  }, [])
 
-  const enviarLead = async () => {
-    const { error } = await supabase.from('leads').insert([{
-      name,
-      email,
-      phone,
-      message,
-      web_origen: 'miweb',
-      cliente_id: clienteId,
-      codigo_afiliado: affiliateCode
-    }])
-    if (error) {
-      console.log('ERROR LEAD:', error)
-      alert(error.message)
-      return
+  const enviarLead = useCallback(async () => {
+    try {
+      const { error } = await supabase.from('leads').insert([{
+        name,
+        email,
+        phone,
+        message,
+        web_origen: 'miweb',
+        cliente_id: clienteId,
+        codigo_afiliado: affiliateCode
+      }])
+      if (error) throw error
+      setEnviado(true)
+      setName(''); setEmail(''); setPhone(''); setMessage(''); setAffiliateCode('')
+      setTimeout(() => setEnviado(false), 3000)
+    } catch (err: any) {
+      console.log('ERROR LEAD:', err)
+      alert(err.message)
     }
+  }, [name, email, phone, message, affiliateCode, clienteId])
 
-    setEnviado(true)
-    setName(''); setEmail(''); setPhone(''); setMessage(''); setAffiliateCode('')
-    setTimeout(() => setEnviado(false), 3000)
-  }
+  // Productos memoizados
+  const productos = useMemo(() => [
+    { name: 'iPhone 17 Pro Max', price: '1.499€', img: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab' },
+    { name: 'Ordenador Oficina', price: '900€', img: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7' },
+    { name: 'MacBook Pro', price: '2.400€', img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8' },
+    { name: 'Cascos Profesionales', price: '250€', img: 'https://images.unsplash.com/photo-1580894908361-967195033215' }
+  ], [])
 
   return (
     <div style={{ fontFamily: 'sans-serif' }}>
@@ -83,7 +93,7 @@ export default function Home() {
       <div style={{ backgroundColor: '#0a2540', padding: '0 20px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 70 }}>
         <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: 2, background: 'linear-gradient(90deg, #ffffff, #a0c4ff)', WebkitBackgroundClip: 'text', color: 'transparent' }}>W</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style={{ width: 20 }} />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style={{ width: 20 }} loading="lazy"/>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', cursor: 'pointer' }} onClick={() => window.open('https://wa.me/34613499398', '_blank')}>
             <span style={{ fontSize: 14, textDecoration: 'underline' }}>+34 613 49 93 98</span>
             <span style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>Hablar con asesor</span>
@@ -96,18 +106,14 @@ export default function Home() {
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'center', gap: 30, textAlign: isMobile ? 'center' : 'left' }}>
           <div style={{ maxWidth: 600 }}>
             <h1 style={{ fontSize: isMobile ? 28 : 36 }}>Trabajamos con miles de negocios</h1>
-
             <p>
               Ayudamos a empresas a conseguir más clientes mediante páginas web, sistemas CRM y automatización de marketing.
               <br />
               We help businesses get more clients through websites, CRM systems and marketing automation.
             </p>
-
             <p>Creamos webs que generan contactos reales cada semana<br />y hacemos marketing para tu empresa</p>
-
             <button onClick={irFormulario} style={{ padding: '12px 20px', marginTop: 20, backgroundColor: '#0070f3', color: 'white', border: 'none', cursor: 'pointer' }}>Quiero más clientes</button>
           </div>
-
           <div style={{ maxWidth: 500 }}>
             <h2 style={{ fontSize: isMobile ? 26 : 38, fontWeight: 800, color: 'white', lineHeight: 1.2 }}>Consigue más clientes para tu negocio automáticamente</h2>
           </div>
@@ -129,7 +135,7 @@ export default function Home() {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-        <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d" alt="Empresarios" style={{ width: '100%', maxWidth: 700, borderRadius: 10 }} />
+        <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d" alt="Empresarios" style={{ width: '100%', maxWidth: 700, borderRadius: 10 }} loading="lazy"/>
       </div>
 
       {/* FINANCIACIÓN */}
@@ -144,29 +150,7 @@ export default function Home() {
           maxWidth: 1000,
           margin: '30px auto'
         }}>
-
-          {[
-            {
-              name: 'iPhone 17 Pro Max',
-              price: '1.499€',
-              img: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab'
-            },
-            {
-              name: 'Ordenador Oficina',
-              price: '900€',
-              img: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7'
-            },
-            {
-              name: 'MacBook Pro',
-              price: '2.400€',
-              img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8'
-            },
-            {
-              name: 'Cascos Profesionales',
-              price: '250€',
-              img: 'https://images.unsplash.com/photo-1580894908361-967195033215'
-            }
-          ].map((item, i) => (
+          {productos.map((item, i) => (
             <div key={i} style={{
               border: '1px solid #e5e7eb',
               borderRadius: 12,
@@ -176,39 +160,26 @@ export default function Home() {
               flexDirection: 'column',
               height: 260
             }}>
-              
               <div style={{ height: 140, overflow: 'hidden' }}>
                 <img 
                   src={item.img} 
                   alt={item.name}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover'
-                  }} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  loading="lazy"
                 />
               </div>
-
-              <div style={{
-                padding: 12,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                flex: 1
-              }}>
+              <div style={{ padding: 12, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1 }}>
                 <h3 style={{ fontSize: 15, margin: 0 }}>{item.name}</h3>
                 <p style={{ fontWeight: 'bold', marginTop: 8 }}>{item.price}</p>
               </div>
-
             </div>
           ))}
-
         </div>
       </div>
 
       {/* BLOQUE ROPA PERSONALIZADA */}
       <div style={{ padding: '40px 20px', textAlign: 'center', maxWidth: 900, margin: '40px auto', border: '2px solid #0070f3', borderRadius: 10, backgroundColor: '#f0f4f8' }}>
-        <img src="https://images.unsplash.com/photo-1591012911203-bc89d1c77ee6" alt="Ropa de trabajo personalizada" style={{ width: '100%', maxWidth: 300, marginBottom: 20, borderRadius: 8 }} />
+        <img src="https://images.unsplash.com/photo-1591012911203-bc89d1c77ee6" alt="Ropa de trabajo personalizada" style={{ width: '100%', maxWidth: 300, marginBottom: 20, borderRadius: 8 }} loading="lazy"/>
         <h3 style={{ fontSize: 22, marginBottom: 10 }}>Encarga tu ropa de trabajo personalizada</h3>
         <p style={{ fontSize: 16, lineHeight: 1.5 }}>
           Danos tu marca y logo, elige el bordado y te hacemos tu traje de trabajo personalizado al gusto de tu empresa.  
