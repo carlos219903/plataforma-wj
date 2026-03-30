@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
 export default function Home() {
-  // Estados del formulario
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -80,7 +79,6 @@ export default function Home() {
           <div style={{ maxWidth: 600 }}>
             <h1 style={{ fontSize: isMobile ? 28 : 36 }}>Trabajamos con miles de negocios</h1>
 
-            {/* ✅ TEXTO CLARO PARA WISE */}
             <p>
               Ayudamos a empresas a conseguir más clientes mediante páginas web, sistemas CRM y automatización de marketing.
               <br />
@@ -116,6 +114,79 @@ export default function Home() {
         <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d" alt="Empresarios" style={{ width: '100%', maxWidth: 700, borderRadius: 10 }} />
       </div>
 
+{/* FINANCIACIÓN */}
+<div style={{ padding: '40px 20px', textAlign: 'center' }}>
+  <h2>Financiación disponible</h2>
+  <p>contacte con +34 613 49 93 98 para mas informacion</p>
+
+  <div style={{
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
+    gap: 20,
+    maxWidth: 1000,
+    margin: '30px auto'
+  }}>
+
+    {[
+      {
+        name: 'iPhone 17 Pro Max',
+        price: '1.499€',
+        img: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab'
+      },
+      {
+        name: 'Ordenador Oficina',
+        price: '900€',
+        img: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7'
+      },
+      {
+        name: 'MacBook Pro',
+        price: '2.400€',
+        img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8'
+      },
+      {
+        name: 'Cascos Profesionales',
+        price: '250€',
+        img: 'https://images.unsplash.com/photo-1580894908361-967195033215'
+      }
+    ].map((item, i) => (
+      <div key={i} style={{
+        border: '1px solid #e5e7eb',
+        borderRadius: 12,
+        overflow: 'hidden',
+        backgroundColor: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        height: 260
+      }}>
+        
+        <div style={{ height: 140, overflow: 'hidden' }}>
+          <img 
+            src={item.img} 
+            alt={item.name}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }} 
+          />
+        </div>
+
+        <div style={{
+          padding: 12,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          flex: 1
+        }}>
+          <h3 style={{ fontSize: 15, margin: 0 }}>{item.name}</h3>
+          <p style={{ fontWeight: 'bold', marginTop: 8 }}>{item.price}</p>
+        </div>
+
+      </div>
+    ))}
+
+  </div>
+</div>
       {/* PLANES */}
       <div style={{ padding: '40px 20px', textAlign: 'center' }}>
         <h2>Planes disponibles</h2>
@@ -159,7 +230,6 @@ export default function Home() {
         <p>Email: sales@groupwj.com</p>
         <p>Atención al cliente: +34 613 49 93 98</p>
 
-        {/* ✅ LEGAL PARA WISE / STRIPE */}
         <p style={{ marginTop: 10 }}>
           © 2026 GroupWJ. Todos los derechos reservados.
           <br />
@@ -172,7 +242,6 @@ export default function Home() {
           Empresa registrada en Brasil
         </p>
 
-        {/* ✅ LINKS DE CREDIBILIDAD */}
         <p style={{ marginTop: 15 }}>
           <a href="/sobre" style={{ color: 'white' }}>Sobre nosotros</a> | 
           <a href="/servicios" style={{ color: 'white', marginLeft: 10 }}>Servicios</a> | 
