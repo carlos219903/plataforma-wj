@@ -23,7 +23,19 @@ export default function Home() {
 
   useEffect(() => {
     if (!clienteId) return
-    supabase.from('visitas').insert([{ pagina: window.location.href, cliente_id: clienteId }])
+    const insertarVisita = async () => {
+  const { error } = await supabase
+    .from('visitas')
+    .insert([{
+      pagina: window.location.href,
+      cliente_id: clienteId
+    }])
+
+  if (error) {
+    console.log('ERROR VISITA:', error)
+    alert(error.message)
+  }
+}
   }, [clienteId])
 
   useEffect(() => {
