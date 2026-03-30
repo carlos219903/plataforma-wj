@@ -18,7 +18,7 @@ export default function Home() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    setClienteId(params.get('cliente_id') || '206a762e-1038-4624-8772-ab4b9cd8b068')
+    setClienteId(params.get('cliente_id') || 'de7295a6-0c55-4d3b-a48c-c0b08352ef38')
   }, [])
 
   useEffect(() => {
@@ -50,7 +50,11 @@ export default function Home() {
       cliente_id: clienteId,
       codigo_afiliado: affiliateCode
     }])
-    if (error) alert('Error')
+    if (error) {
+  console.log('ERROR:', error)
+  alert(error.message)
+  return
+}
     else {
       setEnviado(true)
       setName(''); setEmail(''); setPhone(''); setMessage(''); setAffiliateCode('')
