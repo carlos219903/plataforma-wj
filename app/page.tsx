@@ -16,13 +16,11 @@ export default function Home() {
 
   const formRef = useRef<HTMLDivElement>(null)
 
-  // Capturar cliente_id de la URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     setClienteId(params.get('cliente_id') || 'e1cd0acd-e0b7-44da-90e9-86a765d35161')
   }, [])
 
-  // Registrar visita en background
   useEffect(() => {
     if (!clienteId) return
     const insertarVisita = async () => {
@@ -35,19 +33,11 @@ export default function Home() {
     insertarVisita()
   }, [clienteId])
 
-  // Detectar dispositivo móvil con debounce
   useEffect(() => {
-    let timeout: NodeJS.Timeout
-    const checkMobile = () => {
-      clearTimeout(timeout)
-      timeout = setTimeout(() => setIsMobile(window.innerWidth < 768), 150)
-    }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => {
-      clearTimeout(timeout)
-      window.removeEventListener('resize', checkMobile)
-    }
+    const updateMobile = () => setIsMobile(window.innerWidth < 768)
+    updateMobile()
+    window.addEventListener('resize', updateMobile)
+    return () => window.removeEventListener('resize', updateMobile)
   }, [])
 
   const irFormulario = useCallback(() => formRef.current?.scrollIntoView({ behavior: 'smooth' }), [])
@@ -78,18 +68,16 @@ export default function Home() {
     }
   }, [name, email, phone, message, affiliateCode, clienteId])
 
-  // Productos memoizados
   const productos = useMemo(() => [
-    { name: 'iPhone 17 Pro Max', price: '1.499€', img: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab' },
-    { name: 'Ordenador Oficina', price: '900€', img: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7' },
-    { name: 'MacBook Pro', price: '2.400€', img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8' },
-    { name: 'Cascos Profesionales', price: '250€', img: 'https://images.unsplash.com/photo-1580894908361-967195033215' }
+    { name: 'iPhone 17 Pro Max', price: '1.499€', img: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&auto=format&fit=crop' },
+    { name: 'Ordenador Oficina', price: '900€', img: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400&auto=format&fit=crop' },
+    { name: 'MacBook Pro', price: '2.400€', img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&auto=format&fit=crop' },
+    { name: 'Cascos Profesionales', price: '250€', img: 'https://images.unsplash.com/photo-1580894908361-967195033215?w=400&auto=format&fit=crop' }
   ], [])
 
   return (
     <div style={{ fontFamily: 'sans-serif' }}>
 
-      {/* HEADER */}
       <div style={{ backgroundColor: '#0a2540', padding: '0 20px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 70 }}>
         <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: 2, background: 'linear-gradient(90deg, #ffffff, #a0c4ff)', WebkitBackgroundClip: 'text', color: 'transparent' }}>W</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -101,8 +89,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* HERO */}
-      <div style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1518770660439-4636190af475)', backgroundSize: 'cover', backgroundPosition: 'center', color: 'white', padding: '60px 20px' }}>
+      <div style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop)', backgroundSize: 'cover', backgroundPosition: 'center', color: 'white', padding: '60px 20px' }}>
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'center', gap: 30, textAlign: isMobile ? 'center' : 'left' }}>
           <div style={{ maxWidth: 600 }}>
             <h1 style={{ fontSize: isMobile ? 28 : 36 }}>Trabajamos con miles de negocios</h1>
@@ -120,7 +107,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* CONTENIDO */}
       <div style={{ padding: '30px', textAlign: 'center', backgroundColor: '#0070f3', color: 'white' }}>
         <h2>¿Qué conseguimos?</h2>
         <p>✔ Más llamadas</p><p>✔ Más ventas</p><p>✔ Sin depender de redes sociales</p><p>✔ Gestionamos tu marketing de forma profesional</p>
@@ -135,17 +121,16 @@ export default function Home() {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-        <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d" alt="Empresarios" style={{ width: '100%', maxWidth: 700, borderRadius: 10 }} loading="lazy"/>
+        <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=600&auto=format&fit=crop" alt="Empresarios" style={{ width: '100%', maxWidth: 700, borderRadius: 10 }} loading="lazy"/>
       </div>
 
-      {/* FINANCIACIÓN */}
       <div style={{ padding: '40px 20px', textAlign: 'center' }}>
         <h2>Financiación disponible</h2>
-        <p>contacte con +34 613 49 93 98 para mas informacion</p>
+        <p>contacte con +34 613 49 93 98 para más información</p>
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
           gap: 20,
           maxWidth: 1000,
           margin: '30px auto'
@@ -177,7 +162,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* BLOQUE ROPA PERSONALIZADA */}
       <div style={{ padding: '40px 20px', textAlign: 'center', maxWidth: 900, margin: '40px auto', border: '2px solid #0070f3', borderRadius: 10, backgroundColor: '#f0f4f8' }}>
         <img src="https://www.workwearexpress.com/media/catalog/category/202504WorkwearEssentialsL2.png" alt="Ropa de trabajo personalizada" style={{ width: '100%', maxWidth: 300, marginBottom: 20, borderRadius: 8 }} loading="lazy"/>
         <h3 style={{ fontSize: 22, marginBottom: 10 }}>Encarga tu ropa de trabajo personalizada</h3>
@@ -187,7 +171,6 @@ export default function Home() {
         </p>
       </div>
 
-      {/* PLANES */}
       <div style={{ padding: '40px 20px', textAlign: 'center' }}>
         <h2>Planes disponibles</h2>
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 20, justifyContent: isMobile ? 'center' : 'space-evenly', marginTop: 20 }}>
@@ -207,7 +190,6 @@ export default function Home() {
         <p style={{ marginTop: 20 }}>Contacte con operador de ventas para ofertas exclusivas y personalizadas</p>
       </div>
 
-      {/* FORMULARIO */}
       <div ref={formRef} style={{ padding: '30px', maxWidth: 500, margin: 'auto', border: '2px solid #0070f3', borderRadius: 10, backgroundColor: '#0070f3' }}>
         <h3 style={{ color: 'white' }}>Déjanos tus datos</h3>
         {enviado && <div style={{ backgroundColor: '#4CAF50', color: 'white', padding: 10, marginBottom: 15, textAlign: 'center', borderRadius: 5 }}>Formulario enviado</div>}
@@ -224,30 +206,22 @@ export default function Home() {
         <button onClick={enviarLead} style={{ width: '100%', padding: 12, backgroundColor: '#0a2540', color: 'white', border: 'none', cursor: 'pointer', borderRadius: 5 }}>Quiero clientes</button>
       </div>
 
-      {/* FOOTER */}
       <div style={{ backgroundColor: '#0a2540', padding: '30px 20px', color: 'white', textAlign: 'center', marginTop: 40 }}>
         <p>Política de privacidad | Términos y condiciones | Política de cookies</p>
         <p>Email: sales@groupwj.com</p>
         <p>Atención al cliente: +34 613 49 93 98</p>
-
         <p style={{ marginTop: 10 }}>
           © 2026 GroupWJ. Todos los derechos reservados.
-          <br />
-          Razón social: W. C. A. B.
-          <br />
-          CNPJ: 65.653.650/0001-81
-          <br />
-          Dirección: Balneario Camboriu, Santa Catarina, Brasil
-          <br />
-          Empresa registrada en Brasil
+          <br />Razón social: W. C. A. B.
+          <br />CNPJ: 65.653.650/0001-81
+          <br />Dirección: Balneario Camboriu, Santa Catarina, Brasil
+          <br />Empresa registrada en Brasil
         </p>
-
         <p style={{ marginTop: 15 }}>
           <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'white' }}>Sobre nosotros</a> |   
           <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'white', marginLeft: 10 }}>Servicios</a> |   
           <a href="https://wa.me/34613499398" target="_blank" rel="noopener noreferrer" style={{ color: 'white', marginLeft: 10 }}>Contacto</a>
         </p>
-
         <p style={{ fontSize: 11, opacity: 0.7, marginTop: 20, lineHeight: 1.5 }}>
           Información legal: Los servicios ofrecidos corresponden a soluciones digitales personalizadas. Los resultados pueden variar en función de múltiples factores externos al servicio. Debido a la naturaleza del servicio y su activación inmediata, no se contemplan reembolsos una vez iniciado.
         </p>
