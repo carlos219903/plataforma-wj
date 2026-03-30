@@ -16,28 +16,31 @@ export default function Home() {
 
   const formRef = useRef<HTMLDivElement>(null)
 
+  // Capturar cliente_id de la URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     setClienteId(params.get('cliente_id') || 'e1cd0acd-e0b7-44da-90e9-86a765d35161')
   }, [])
 
+  // Registrar visita solo cuando clienteId esté disponible
   useEffect(() => {
     if (!clienteId) return
-    const insertarVisita = async () => {
-  const { error } = await supabase
-    .from('visitas')
-    .insert([{
-      pagina: window.location.href,
-      cliente_id: clienteId
-    }])
 
-  if (error) {
-    console.log('ERROR VISITA:', error)
-    alert(error.message)
-  }
-}
+    const insertarVisita = async () => {
+      const { error } = await supabase
+        .from('visitas')
+        .insert([{ pagina: window.location.href, cliente_id: clienteId }])
+
+      if (error) {
+        console.log('ERROR VISITA:', error)
+        alert(error.message)
+      }
+    }
+
+    insertarVisita()
   }, [clienteId])
 
+  // Detectar dispositivo móvil
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
     checkMobile()
@@ -63,15 +66,14 @@ export default function Home() {
       codigo_afiliado: affiliateCode
     }])
     if (error) {
-  console.log('ERROR:', error)
-  alert(error.message)
-  return
-}
-    else {
-      setEnviado(true)
-      setName(''); setEmail(''); setPhone(''); setMessage(''); setAffiliateCode('')
-      setTimeout(() => setEnviado(false), 3000)
+      console.log('ERROR LEAD:', error)
+      alert(error.message)
+      return
     }
+
+    setEnviado(true)
+    setName(''); setEmail(''); setPhone(''); setMessage(''); setAffiliateCode('')
+    setTimeout(() => setEnviado(false), 3000)
   }
 
   return (
@@ -130,79 +132,80 @@ export default function Home() {
         <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d" alt="Empresarios" style={{ width: '100%', maxWidth: 700, borderRadius: 10 }} />
       </div>
 
-{/* FINANCIACIÓN */}
-<div style={{ padding: '40px 20px', textAlign: 'center' }}>
-  <h2>Financiación disponible</h2>
-  <p>contacte con +34 613 49 93 98 para mas informacion</p>
-
-  <div style={{
-    display: 'grid',
-    gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
-    gap: 20,
-    maxWidth: 1000,
-    margin: '30px auto'
-  }}>
-
-    {[
-      {
-        name: 'iPhone 17 Pro Max',
-        price: '1.499€',
-        img: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab'
-      },
-      {
-        name: 'Ordenador Oficina',
-        price: '900€',
-        img: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7'
-      },
-      {
-        name: 'MacBook Pro',
-        price: '2.400€',
-        img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8'
-      },
-      {
-        name: 'Cascos Profesionales',
-        price: '250€',
-        img: 'https://images.unsplash.com/photo-1580894908361-967195033215'
-      }
-    ].map((item, i) => (
-      <div key={i} style={{
-        border: '1px solid #e5e7eb',
-        borderRadius: 12,
-        overflow: 'hidden',
-        backgroundColor: 'white',
-        display: 'flex',
-        flexDirection: 'column',
-        height: 260
-      }}>
-        
-        <div style={{ height: 140, overflow: 'hidden' }}>
-          <img 
-            src={item.img} 
-            alt={item.name}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
-            }} 
-          />
-        </div>
+      {/* FINANCIACIÓN */}
+      <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+        <h2>Financiación disponible</h2>
+        <p>contacte con +34 613 49 93 98 para mas informacion</p>
 
         <div style={{
-          padding: 12,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          flex: 1
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
+          gap: 20,
+          maxWidth: 1000,
+          margin: '30px auto'
         }}>
-          <h3 style={{ fontSize: 15, margin: 0 }}>{item.name}</h3>
-          <p style={{ fontWeight: 'bold', marginTop: 8 }}>{item.price}</p>
+
+          {[
+            {
+              name: 'iPhone 17 Pro Max',
+              price: '1.499€',
+              img: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab'
+            },
+            {
+              name: 'Ordenador Oficina',
+              price: '900€',
+              img: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7'
+            },
+            {
+              name: 'MacBook Pro',
+              price: '2.400€',
+              img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8'
+            },
+            {
+              name: 'Cascos Profesionales',
+              price: '250€',
+              img: 'https://images.unsplash.com/photo-1580894908361-967195033215'
+            }
+          ].map((item, i) => (
+            <div key={i} style={{
+              border: '1px solid #e5e7eb',
+              borderRadius: 12,
+              overflow: 'hidden',
+              backgroundColor: 'white',
+              display: 'flex',
+              flexDirection: 'column',
+              height: 260
+            }}>
+              
+              <div style={{ height: 140, overflow: 'hidden' }}>
+                <img 
+                  src={item.img} 
+                  alt={item.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }} 
+                />
+              </div>
+
+              <div style={{
+                padding: 12,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                flex: 1
+              }}>
+                <h3 style={{ fontSize: 15, margin: 0 }}>{item.name}</h3>
+                <p style={{ fontWeight: 'bold', marginTop: 8 }}>{item.price}</p>
+              </div>
+
+            </div>
+          ))}
+
         </div>
-
       </div>
-    ))}
 
-  </div>
-</div>
       {/* PLANES */}
       <div style={{ padding: '40px 20px', textAlign: 'center' }}>
         <h2>Planes disponibles</h2>
