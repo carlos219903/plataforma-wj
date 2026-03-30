@@ -79,17 +79,17 @@ export default function Home() {
   return (
     <div style={{ fontFamily: 'sans-serif' }}>
 
-      {/* HEADER */}
-      <div style={{ backgroundColor: '#0a2540', padding: '0 20px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 70 }}>
-        <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: 2, background: 'linear-gradient(90deg, #ffffff, #a0c4ff)', WebkitBackgroundClip: 'text', color: 'transparent' }}>W</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style={{ width: 20 }} />
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: 14 }}>+34 613 49 93 98</span>
-            <span style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>Hablar con asesor</span>
-          </div>
-        </div>
-      </div>
+    {/* HEADER */}
+<div style={{ backgroundColor: '#0a2540', padding: '0 20px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 70 }}>
+  <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: 2, background: 'linear-gradient(90deg, #ffffff, #a0c4ff)', WebkitBackgroundClip: 'text', color: 'transparent' }}>W</div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style={{ width: 20 }} />
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', cursor: 'pointer' }} onClick={() => window.open('https://wa.me/34613499398', '_blank')}>
+      <span style={{ fontSize: 14, textDecoration: 'underline' }}>+34 613 49 93 98</span>
+      <span style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>Hablar con asesor</span>
+    </div>
+  </div>
+</div>
 
       {/* HERO */}
       <div style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1518770660439-4636190af475)', backgroundSize: 'cover', backgroundPosition: 'center', color: 'white', padding: '60px 20px' }}>
@@ -244,32 +244,32 @@ export default function Home() {
       </div>
 
       {/* FOOTER */}
-      <div style={{ backgroundColor: '#0a2540', padding: '30px 20px', color: 'white', textAlign: 'center', marginTop: 40 }}>
-        <p>Política de privacidad | Términos y condiciones | Política de cookies</p>
-        <p>Email: sales@groupwj.com</p>
-        <p>Atención al cliente: +34 613 49 93 98</p>
+<div style={{ backgroundColor: '#0a2540', padding: '30px 20px', color: 'white', textAlign: 'center', marginTop: 40 }}>
+  <p>Política de privacidad | Términos y condiciones | Política de cookies</p>
+  <p>Email: sales@groupwj.com</p>
+  <p>Atención al cliente: +34 613 49 93 98</p>
 
-        <p style={{ marginTop: 10 }}>
-          © 2026 GroupWJ. Todos los derechos reservados.
-          <br />
-          Razón social: Wender carlos araujo barros
-          <br />
-          CNPJ: 65.653.650/0001-81
-          <br />
-          Dirección: Ipatinga, Minas Gerais, Brasil
-          <br />
-          Empresa registrada en Brasil
-        </p>
+  <p style={{ marginTop: 10 }}>
+    © 2026 GroupWJ. Todos los derechos reservados.
+    <br />
+    Razón social: W. C. A. B.
+    <br />
+    CNPJ: 65.653.650/0001-81
+    <br />
+    Dirección: Balneario Camboriu, Santa Catarina, Brasil
+    <br />
+    Empresa registrada en Brasil
+  </p>
 
-        <p style={{ marginTop: 15 }}>
-          <a href="/sobre" style={{ color: 'white' }}>Sobre nosotros</a> | 
-          <a href="/servicios" style={{ color: 'white', marginLeft: 10 }}>Servicios</a> | 
-          <a href="/contacto" style={{ color: 'white', marginLeft: 10 }}>Contacto</a>
-        </p>
+  <p style={{ marginTop: 15 }}>
+    <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'white' }}>Sobre nosotros</a> |   
+    <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'white', marginLeft: 10 }}>Servicios</a> |   
+    <a href="https://wa.me/34613499398" target="_blank" rel="noopener noreferrer" style={{ color: 'white', marginLeft: 10 }}>Contacto</a>
+  </p>
 
-        <p style={{ fontSize: 11, opacity: 0.7, marginTop: 20, lineHeight: 1.5 }}>
-          Información legal: Los servicios ofrecidos corresponden a soluciones digitales personalizadas. Los resultados pueden variar en función de múltiples factores externos al servicio. Debido a la naturaleza del servicio y su activación inmediata, no se contemplan reembolsos una vez iniciado.
-        </p>
+  <p style={{ fontSize: 11, opacity: 0.7, marginTop: 20, lineHeight: 1.5 }}>
+    Información legal: Los servicios ofrecidos corresponden a soluciones digitales personalizadas. Los resultados pueden variar en función de múltiples factores externos al servicio. Debido a la naturaleza del servicio y su activación inmediata, no se contemplan reembolsos una vez iniciado.
+    </p>
       </div>
 
     </div>
