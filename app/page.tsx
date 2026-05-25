@@ -95,8 +95,6 @@ export default function Home() {
             <h1 style={{ fontSize: isMobile ? 28 : 36 }}>Trabajamos con miles de negocios</h1>
             <p>
               Ayudamos a empresas a conseguir más clientes mediante páginas web, sistemas CRM y automatización de marketing.
-              <br />
-              We help businesses get more clients through websites, CRM systems and marketing automation.
             </p>
             <p>Creamos webs que generan contactos reales cada semana<br />y hacemos marketing para tu empresa</p>
             <button onClick={irFormulario} style={{ padding: '12px 20px', marginTop: 20, backgroundColor: '#0070f3', color: 'white', border: 'none', cursor: 'pointer' }}>Quiero más clientes</button>
