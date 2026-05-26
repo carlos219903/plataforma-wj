@@ -50,6 +50,10 @@ export default function Home() {
     return () => window.removeEventListener('resize', updateMobile)
   }, [])
 
+  useEffect(() => {
+    document.documentElement.style.colorScheme = 'dark'
+  }, [])
+
   const irFormulario = useCallback(() => {
     formRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [])
@@ -114,7 +118,14 @@ export default function Home() {
   ], [])
 
   return (
-    <div style={{ fontFamily: 'sans-serif' }}>
+    <div
+      style={{
+        fontFamily: 'sans-serif',
+        backgroundColor: '#000000',
+        color: 'white',
+        minHeight: '100vh'
+      }}
+    >
 
       <div
         style={{
@@ -263,7 +274,8 @@ export default function Home() {
           padding: '30px',
           maxWidth: 700,
           margin: 'auto',
-          textAlign: 'center'
+          textAlign: 'center',
+          color: 'white'
         }}
       >
         <p
@@ -296,7 +308,13 @@ export default function Home() {
         />
       </div>
 
-      <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+      <div
+        style={{
+          padding: '40px 20px',
+          textAlign: 'center',
+          color: 'white'
+        }}
+      >
         <h2>Financiación disponible</h2>
 
         <p>contacte con +34 613 49 93 98 para más información</p>
@@ -317,7 +335,7 @@ export default function Home() {
                 border: '1px solid #e5e7eb',
                 borderRadius: 12,
                 overflow: 'hidden',
-                backgroundColor: 'white',
+                backgroundColor: '#111827',
                 display: 'flex',
                 flexDirection: 'column',
                 height: 260
@@ -345,11 +363,23 @@ export default function Home() {
                   flex: 1
                 }}
               >
-                <h3 style={{ fontSize: 15, margin: 0 }}>
+                <h3
+                  style={{
+                    fontSize: 15,
+                    margin: 0,
+                    color: 'white'
+                  }}
+                >
                   {item.name}
                 </h3>
 
-                <p style={{ fontWeight: 'bold', marginTop: 8 }}>
+                <p
+                  style={{
+                    fontWeight: 'bold',
+                    marginTop: 8,
+                    color: '#60a5fa'
+                  }}
+                >
                   {item.price}
                 </p>
               </div>
@@ -366,7 +396,7 @@ export default function Home() {
           margin: '40px auto',
           border: '2px solid #0070f3',
           borderRadius: 10,
-          backgroundColor: '#f0f4f8'
+          backgroundColor: '#111827'
         }}
       >
         <img
@@ -391,7 +421,13 @@ export default function Home() {
         </p>
       </div>
 
-      <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+      <div
+        style={{
+          padding: '40px 20px',
+          textAlign: 'center',
+          color: 'white'
+        }}
+      >
         <h2>Planes disponibles</h2>
 
         <div
@@ -408,6 +444,8 @@ export default function Home() {
               border: '2px solid #0070f3',
               borderRadius: 10,
               padding: 20,
+              backgroundColor: '#111827',
+              color: 'white',
               width: isMobile ? '100%' : 250
             }}
           >
@@ -427,6 +465,8 @@ export default function Home() {
               border: '2px solid #0070f3',
               borderRadius: 10,
               padding: 20,
+              backgroundColor: '#111827',
+              color: 'white',
               width: isMobile ? '100%' : 250
             }}
           >
@@ -445,6 +485,8 @@ export default function Home() {
               border: '2px solid #0070f3',
               borderRadius: 10,
               padding: 20,
+              backgroundColor: '#111827',
+              color: 'white',
               width: isMobile ? '100%' : 250
             }}
           >
