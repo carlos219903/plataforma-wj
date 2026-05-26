@@ -18,7 +18,11 @@ export default function Home() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    setClienteId(params.get('cliente_id') || 'e1cd0acd-e0b7-44da-90e9-86a765d35161')
+
+    setClienteId(
+      params.get('cliente_id') ||
+      'e1cd0acd-e0b7-44da-90e9-86a765d35161'
+    )
   }, [])
 
   useEffect(() => {
@@ -48,10 +52,6 @@ export default function Home() {
     window.addEventListener('resize', updateMobile)
 
     return () => window.removeEventListener('resize', updateMobile)
-  }, [])
-
-  useEffect(() => {
-    document.documentElement.style.colorScheme = 'dark'
   }, [])
 
   const irFormulario = useCallback(() => {
@@ -308,13 +308,7 @@ export default function Home() {
         />
       </div>
 
-      <div
-        style={{
-          padding: '40px 20px',
-          textAlign: 'center',
-          color: 'white'
-        }}
-      >
+      <div style={{ padding: '40px 20px', textAlign: 'center', color: 'white' }}>
         <h2>Financiación disponible</h2>
 
         <p>contacte con +34 613 49 93 98 para más información</p>
@@ -332,13 +326,14 @@ export default function Home() {
             <div
               key={i}
               style={{
-                border: '1px solid #e5e7eb',
+                border: '1px solid #333',
                 borderRadius: 12,
                 overflow: 'hidden',
-                backgroundColor: '#111827',
+                backgroundColor: '#111111',
                 display: 'flex',
                 flexDirection: 'column',
-                height: 260
+                height: 260,
+                color: 'white'
               }}
             >
               <div style={{ height: 140, overflow: 'hidden' }}>
@@ -363,23 +358,11 @@ export default function Home() {
                   flex: 1
                 }}
               >
-                <h3
-                  style={{
-                    fontSize: 15,
-                    margin: 0,
-                    color: 'white'
-                  }}
-                >
+                <h3 style={{ fontSize: 15, margin: 0 }}>
                   {item.name}
                 </h3>
 
-                <p
-                  style={{
-                    fontWeight: 'bold',
-                    marginTop: 8,
-                    color: '#60a5fa'
-                  }}
-                >
+                <p style={{ fontWeight: 'bold', marginTop: 8 }}>
                   {item.price}
                 </p>
               </div>
@@ -396,7 +379,8 @@ export default function Home() {
           margin: '40px auto',
           border: '2px solid #0070f3',
           borderRadius: 10,
-          backgroundColor: '#111827'
+          backgroundColor: '#111111',
+          color: 'white'
         }}
       >
         <img
@@ -421,13 +405,7 @@ export default function Home() {
         </p>
       </div>
 
-      <div
-        style={{
-          padding: '40px 20px',
-          textAlign: 'center',
-          color: 'white'
-        }}
-      >
+      <div style={{ padding: '40px 20px', textAlign: 'center', color: 'white' }}>
         <h2>Planes disponibles</h2>
 
         <div
@@ -444,9 +422,8 @@ export default function Home() {
               border: '2px solid #0070f3',
               borderRadius: 10,
               padding: 20,
-              backgroundColor: '#111827',
-              color: 'white',
-              width: isMobile ? '100%' : 250
+              width: isMobile ? '100%' : 250,
+              backgroundColor: '#111111'
             }}
           >
             <p>✔ Web profesional</p>
@@ -465,9 +442,8 @@ export default function Home() {
               border: '2px solid #0070f3',
               borderRadius: 10,
               padding: 20,
-              backgroundColor: '#111827',
-              color: 'white',
-              width: isMobile ? '100%' : 250
+              width: isMobile ? '100%' : 250,
+              backgroundColor: '#111111'
             }}
           >
             <p>✔ Todo lo anterior</p>
@@ -485,9 +461,8 @@ export default function Home() {
               border: '2px solid #0070f3',
               borderRadius: 10,
               padding: 20,
-              backgroundColor: '#111827',
-              color: 'white',
-              width: isMobile ? '100%' : 250
+              width: isMobile ? '100%' : 250,
+              backgroundColor: '#111111'
             }}
           >
             <p>✔ Todo lo anterior</p>
@@ -543,7 +518,8 @@ export default function Home() {
           style={{
             width: '100%',
             padding: 10,
-            backgroundColor: 'white'
+            backgroundColor: 'white',
+            color: 'black'
           }}
         />
 
@@ -556,7 +532,8 @@ export default function Home() {
           style={{
             width: '100%',
             padding: 10,
-            backgroundColor: 'white'
+            backgroundColor: 'white',
+            color: 'black'
           }}
         />
 
@@ -569,7 +546,8 @@ export default function Home() {
           style={{
             width: '100%',
             padding: 10,
-            backgroundColor: 'white'
+            backgroundColor: 'white',
+            color: 'black'
           }}
         />
 
@@ -582,7 +560,8 @@ export default function Home() {
           style={{
             width: '100%',
             padding: 10,
-            backgroundColor: 'white'
+            backgroundColor: 'white',
+            color: 'black'
           }}
         />
 
@@ -600,6 +579,7 @@ export default function Home() {
             width: '100%',
             padding: 10,
             backgroundColor: 'white',
+            color: 'black',
             resize: 'none',
             overflow: 'hidden'
           }}
