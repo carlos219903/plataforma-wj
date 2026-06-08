@@ -1,51 +1,93 @@
-const session: any = event.data.object
+import { NextRequest, NextResponse } from 'next/server'
+import Stripe from 'stripe'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
-const email = session.customer_details?.email
-const amount = session.amount_total
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
-if (!email) {
-  return NextResponse.json({ error: 'No email' }, { status: 400 })
-}
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.text()
 
-// Buscar último cliente para generar número
-const { data: lastClient } = await supabaseAdmin
-  .from('clientes')
-  .select('numero_cliente')
-  .order('fecha_alta', { ascending: false })
-  .limit(1)
-  .maybeSingle()
+    const signature = req.headers.get('stripe-signature')
 
-let nextNumber = 1
+    if (!signature) {
+      return NextResponse.json(
+        { error: 'Missing signature' },
+        { status: 400 }
+      )
+    }
 
-if (lastClient?.numero_cliente) {
-  const lastNum = parseInt(lastClient.numero_cliente.replace('CL-', ''))
-  nextNumber = lastNum + 1
-}
+    const event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    )
 
-const numeroCliente = CL-${String(nextNumber).padStart(4, '0')}
+    if (event.type === 'checkout.session.completed') {
+      const session: any = event.data.object
 
-// Insertar o actualizar cliente
-const payload = {
-  email,
-  numero_cliente: numeroCliente,
-  estado: 'activo',
-  contrato_firmado: true,
-  fecha_alta: new Date().toISOString(),
-}
+      const email = session.customer_details?.email
 
-const { data: existing } = await supabaseAdmin
-  .from('clientes')
-  .select('*')
-  .eq('email', email)
-  .maybeSingle()
+      if (!email) {
+        return NextResponse.json(
+          { error: 'No email found' },
+          { status: 400 }
+        )
+      }
 
-if (existing) {
-  await supabaseAdmin
-    .from('clientes')
-    .update(payload)
-    .eq('email', email)
-} else {
-  await supabaseAdmin
-    .from('clientes')
-    .insert([payload])
+      const { data: lastClient } = await supabaseAdmin
+        .from('clientes')
+        .select('numero_cliente')
+        .order('fecha_alta', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+      let nextNumber = 1
+
+      if (lastClient?.numero_cliente) {
+        const lastNum = parseInt(
+          lastClient.numero_cliente.replace('CL-', '')
+        )
+
+        nextNumber = lastNum + 1
+      }
+
+      const numeroCliente =
+        `CL-${String(nextNumber).padStart(4, '0')}`
+
+      const payload = {
+        email,
+        numero_cliente: numeroCliente,
+        estado: 'activo',
+        contrato_firmado: true,
+        fecha_alta: new Date().toISOString()
+      }
+
+      const { data: existing } = await supabaseAdmin
+        .from('clientes')
+        .select('*')
+        .eq('email', email)
+        .maybeSingle()
+
+      if (existing) {
+        await supabaseAdmin
+          .from('clientes')
+          .update(payload)
+          .eq('email', email)
+      } else {
+        await supabaseAdmin
+          .from('clientes')
+          .insert([payload])
+      }
+    }
+
+    return NextResponse.json({ received: true })
+  } catch (error: any) {
+    console.error(error)
+
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    )
+  }
 }
