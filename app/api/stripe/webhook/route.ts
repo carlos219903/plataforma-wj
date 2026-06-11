@@ -26,6 +26,17 @@ const event = stripe.webhooks.constructEvent(
 if (event.type === 'checkout.session.completed') {
   const session: any = event.data.object
 
+const fullSession = await stripe.checkout.sessions.retrieve(
+  session.id,
+  {
+    expand: ['line_items']
+  }
+)
+
+console.log(
+  JSON.stringify(fullSession.line_items, null, 2)
+)
+
   const email = session.customer_details?.email
 
   if (!email) {
