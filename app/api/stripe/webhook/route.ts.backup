@@ -42,54 +42,6 @@ console.log(
 
   const email = session.customer_details?.email
 
-const customerId = session.customer || null
-const subscriptionId = session.subscription || null
-
-let plan = 'Desconocido'
-let precioAlta = 0
-let precioMensual = 0
-
-const lineItems: any = fullSession.line_items?.data || []
-
-for (const item of lineItems) {
-  const priceId = item.price?.id
-
-  if (
-    priceId === 'price_1TglkbLleVRUae4cBHK9JXeH' ||
-    priceId === 'price_1TglmzLleVRUae4cuIAnBLF8'
-  ) {
-    plan = 'Premium'
-    precioAlta = 900
-    precioMensual = 300
-  }
-
-  if (
-    priceId === 'price_1TglwgLleVRUae4cfTgkMzGc' ||
-    priceId === 'price_1TgmR2LleVRUae4cUz7I2khi'
-  ) {
-    plan = 'Profesional'
-    precioAlta = 320
-    precioMensual = 180
-  }
-
-  if (
-    priceId === 'price_1TgmS9LleVRUae4ceBgRkiTi' ||
-    priceId === 'price_1TgmSSLleVRUae4cjDAqXAQ0'
-  ) {
-    plan = 'Basico'
-    precioAlta = 210
-    precioMensual = 90
-  }
-}
-
-const fechaAlta = new Date()
-
-const fechaFinCompromiso = new Date(fechaAlta)
-
-fechaFinCompromiso.setMonth(
-  fechaFinCompromiso.getMonth() + 3
-)
-
   if (!email) {
     return NextResponse.json(
       { error: 'No email found' },
@@ -119,27 +71,12 @@ fechaFinCompromiso.setMonth(
     `CL-${String(nextNumber).padStart(4, '0')}`
 
   const payload = {
-  email,
-  numero_cliente: numeroCliente,
-
-  estado: 'activo',
-  estado_pago: 'activo',
-
-  contrato_firmado: true,
-
-  plan,
-
-  precio_alta: precioAlta,
-  precio_mensual: precioMensual,
-
-  stripe_customer_id: customerId,
-  stripe_subscription_id: subscriptionId,
-
-  meses_compromiso: 3,
-
-  fecha_alta: fechaAlta.toISOString(),
-  fecha_fin_compromiso: fechaFinCompromiso.toISOString()
-}
+    email,
+    numero_cliente: numeroCliente,
+    estado: 'activo',
+    contrato_firmado: true,
+    fecha_alta: new Date().toISOString()
+  }
 
   const { data: existing } = await supabaseAdmin
     .from('clientes')
