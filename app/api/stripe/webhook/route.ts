@@ -184,6 +184,20 @@ if (event.type === 'invoice.paid') {
     .eq('stripe_customer_id', customerId)
 
 }
+if (event.type === 'invoice.payment_failed') {
+
+  const invoice: any = event.data.object
+
+  const customerId = invoice.customer
+
+  await supabaseAdmin
+    .from('clientes')
+    .update({
+      estado_pago: 'impagado'
+    })
+    .eq('stripe_customer_id', customerId)
+
+}
 return NextResponse.json({ received: true })
 
 } catch (error: any) {
