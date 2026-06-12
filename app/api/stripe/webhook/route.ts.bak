@@ -26,9 +26,6 @@ const event = stripe.webhooks.constructEvent(
 if (event.type === 'checkout.session.completed') {
   const session: any = event.data.object
 
-  console.log('CUSTOMER:', session.customer)
-console.log('SUBSCRIPTION:', session.subscription)
-
 const fullSession = await stripe.checkout.sessions.retrieve(
   session.id,
   {
