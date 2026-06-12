@@ -5,34 +5,6 @@ import { supabase } from '../../lib/supabase'
 
 export default function Dashboard() {
 
-const PASSWORD = 'WJ2026Dashboard'
-
-const [authorized, setAuthorized] = useState(false)
-
-useEffect(() => {
-
-  const saved =
-    localStorage.getItem('dashboard_auth')
-
-  if (saved === PASSWORD) {
-    setAuthorized(true)
-    return
-  }
-
-  const password =
-    prompt('Introduce la contraseña')
-
-  if (password === PASSWORD) {
-    localStorage.setItem(
-      'dashboard_auth',
-      password
-    )
-
-    setAuthorized(true)
-  }
-
-}, [])
-
   const [leads,setLeads] = useState<any[]>([])
   const [clientes,setClientes] = useState<any[]>([])
 
@@ -89,10 +61,6 @@ useEffect(() => {
         (acc,c)=>acc+(c.precio_mensual || 0),
         0
       )
-
-if (!authorized) {
-  return <div>Acceso denegado</div>
-}
 
   return(
 
