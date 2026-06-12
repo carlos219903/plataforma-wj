@@ -158,7 +158,32 @@ fechaFinCompromiso.setMonth(
       .insert([payload])
   }
 }
+if (event.type === 'invoice.paid') {
 
+  const invoice: any = event.data.object
+
+  const customerId = invoice.customer
+
+  const fechaUltimoPago = new Date()
+
+  const fechaProximoPago = new Date()
+
+  fechaProximoPago.setMonth(
+    fechaProximoPago.getMonth() + 1
+  )
+
+  await supabaseAdmin
+    .from('clientes')
+    .update({
+      estado_pago: 'activo',
+      fecha_ultimo_pago:
+        fechaUltimoPago.toISOString(),
+      fecha_proximo_pago:
+        fechaProximoPago.toISOString()
+    })
+    .eq('stripe_customer_id', customerId)
+
+}
 return NextResponse.json({ received: true })
 
 } catch (error: any) {
