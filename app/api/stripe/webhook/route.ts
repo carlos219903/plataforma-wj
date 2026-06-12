@@ -198,6 +198,58 @@ if (event.type === 'invoice.payment_failed') {
     .eq('stripe_customer_id', customerId)
 
 }
+
+if (event.type === 'customer.subscription.deleted') {
+
+  const subscription: any = event.data.object
+
+  const subscriptionId = subscription.id
+
+  const { data: cliente } = await supabaseAdmin
+    .from('clientes')
+    .select('*')
+    .eq('stripe_subscription_id', subscriptionId)
+    .maybeSingle()
+
+  if (cliente) {
+
+    const hoy = new Date()
+
+    const fechaFin = new Date(
+      cliente.fecha_fin_compromiso
+    )
+
+    let mesesRestantes = 0
+
+    if (fechaFin > hoy) {
+
+      mesesRestantes =
+        (fechaFin.getFullYear() - hoy.getFullYear()) * 12 +
+        (fechaFin.getMonth() - hoy.getMonth())
+
+      if (fechaFin.getDate() > hoy.getDate()) {
+        mesesRestantes++
+      }
+
+    }
+
+    const penalizacion =
+      mesesRestantes *
+      (cliente.precio_mensual || 0)
+
+    await supabaseAdmin
+      .from('clientes')
+      .update({
+        estado: 'cancelado',
+        fecha_baja: hoy.toISOString(),
+        penalizacion
+      })
+      .eq('id', cliente.id)
+
+  }
+
+}
+
 return NextResponse.json({ received: true })
 
 } catch (error: any) {
