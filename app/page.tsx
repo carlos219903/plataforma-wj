@@ -172,7 +172,7 @@ export default function Home() {
               alignItems: 'flex-start',
               cursor: 'pointer'
             }}
-            onClick={() => window.open('https://wa.me/553199599-9736', '_blank')}
+            onClick={() => window.open('https://wa.me/55319959-9736', '_blank')}
           >
             <span style={{ fontSize: 14, textDecoration: 'underline' }}>
               +34 613 49 93 98
@@ -311,7 +311,7 @@ export default function Home() {
       <div style={{ padding: '40px 20px', textAlign: 'center', color: 'white' }}>
         <h2>Financiación disponible</h2>
 
-        <p>contacte con +34 613 49 93 98 para más información</p>
+        <p>contacte con +55 31 9959-9736 para más información</p>
 
         <div
           style={{
@@ -616,7 +616,7 @@ export default function Home() {
 
         <p>Email: sales@groupwj.com</p>
 
-        <p>Atención al cliente: +55 31 99599-9736</p>
+        <p>Atención al cliente: +55 31 9959-9736</p>
 
         <p style={{ marginTop: 10 }}>
           © 2026 GroupWJ. Todos los derechos reservados.
@@ -652,7 +652,7 @@ export default function Home() {
           {' | '}
 
           <a
-            href="https://wa.me/553199599-9736"
+            href="https://wa.me/55319959-9736"
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: 'white', marginLeft: 10 }}
