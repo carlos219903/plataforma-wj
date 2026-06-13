@@ -175,8 +175,8 @@ export default function Home() {
             onClick={() => window.open('https://wa.me/55319959-9736', '_blank')}
           >
             <span style={{ fontSize: 14, textDecoration: 'underline' }}>
-              +34 613 49 93 98
-            </span>
+  +55 31 9959-9736
+</span>
 
             <span style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>
               Hablar con asesor
