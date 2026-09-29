@@ -1,0 +1,135 @@
+import { NextRequest, NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabase-admin";
+
+export const dynamic = "force-dynamic";
+
+type AnalyticsBody = {
+  visitorId?: string;
+  sessionId?: string;
+  event?: string;
+  page?: string;
+  element?: string;
+  destination?: string;
+  source?: string;
+  campaign?: string;
+  reference?: string;
+  device?: string;
+  metadata?: Record<string, unknown>;
+};
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = (await request.json()) as AnalyticsBody;
+
+    const visitorId = body.visitorId?.trim();
+    const sessionId = body.sessionId?.trim();
+    const event = body.event?.trim();
+
+    if (!visitorId || !event) {
+      return NextResponse.json(
+        { error: "visitorId y event son obligatorios" },
+        { status: 400 }
+      );
+    }
+
+    const allowedEvents = new Set([
+      "page_view",
+      "click",
+      "demo_view",
+      "demo_module",
+      "form_view",
+      "form_submit",
+      "checkout_start",
+      "purchase",
+    ]);
+
+    if (!allowedEvents.has(event)) {
+      return NextResponse.json(
+        { error: "Evento no permitido" },
+        { status: 400 }
+      );
+    }
+
+    const { data: existing, error: lookupError } = await supabaseAdmin
+      .from("visitantes")
+      .select("id, total_eventos, total_sesiones")
+      .eq("visitor_id", visitorId)
+      .maybeSingle();
+
+    if (lookupError) throw lookupError;
+
+    let visitanteId: string;
+
+    if (!existing) {
+      const { data: created, error: createError } = await supabaseAdmin
+        .from("visitantes")
+        .insert({
+          visitor_id: visitorId,
+          origen: body.source || null,
+          campana: body.campaign || null,
+          referencia: body.reference || null,
+          primera_pagina: body.page || null,
+          ultima_pagina: body.page || null,
+          dispositivo: body.device || null,
+          total_eventos: 1,
+          vio_demo: event === "demo_view",
+          llego_formulario: event === "form_view",
+          envio_formulario: event === "form_submit",
+          inicio_pago: event === "checkout_start",
+          convertido: event === "purchase",
+        })
+        .select("id")
+        .single();
+
+      if (createError) throw createError;
+      visitanteId = created.id;
+    } else {
+      visitanteId = existing.id;
+
+      const updates: Record<string, unknown> = {
+        ultima_visita: new Date().toISOString(),
+        ultima_pagina: body.page || null,
+        total_eventos: (existing.total_eventos || 0) + 1,
+      };
+
+      if (event === "demo_view") updates.vio_demo = true;
+      if (event === "form_view") updates.llego_formulario = true;
+      if (event === "form_submit") updates.envio_formulario = true;
+      if (event === "checkout_start") updates.inicio_pago = true;
+      if (event === "purchase") updates.convertido = true;
+
+      const { error: updateError } = await supabaseAdmin
+        .from("visitantes")
+        .update(updates)
+        .eq("id", visitanteId);
+
+      if (updateError) throw updateError;
+    }
+
+    const { error: eventError } = await supabaseAdmin
+      .from("eventos_web")
+      .insert({
+        visitante_id: visitanteId,
+        session_id: sessionId || null,
+        evento: event,
+        pagina: body.page || null,
+        elemento: body.element || null,
+        destino: body.destination || null,
+        metadata: body.metadata || {},
+      });
+
+    if (eventError) throw eventError;
+
+    return NextResponse.json({
+      ok: true,
+      visitanteId,
+    });
+  } catch (error) {
+    console.error("Analytics error:", error);
+
+    return NextResponse.json(
+      { error: "No se pudo registrar el evento" },
+      { status: 500 }
+    );
+  }
+}

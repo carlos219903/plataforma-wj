@@ -1,0 +1,53 @@
+import { NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabase-admin";
+
+export const dynamic = "force-dynamic";
+
+export async function GET() {
+  try {
+    const { data: sesiones, error } = await supabaseAdmin
+      .from("sesiones_web")
+      .select(`
+        id,
+        session_id,
+        visitante_id,
+        origen,
+        campana,
+        referencia,
+        primera_pagina,
+        ultima_pagina,
+        dispositivo,
+        inicio,
+        ultima_actividad,
+        total_eventos,
+        vio_demo,
+        llego_formulario,
+        envio_formulario,
+        inicio_pago,
+        convertido,
+        visitantes (
+          numero_visitante,
+          visitor_id
+        )
+      `)
+      .order("inicio", { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+
+    return NextResponse.json({
+      ok: true,
+      sesiones: sesiones ?? [],
+    });
+  } catch (error) {
+    console.error("Admin analytics error:", error);
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "No se pudieron cargar las estadísticas",
+      },
+      { status: 500 }
+    );
+  }
+}

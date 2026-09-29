@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { trackEvent } from "@/components/analytics/WebAnalytics";
 import CRM from "@/components/demo/crm/CRM";
 import Empleados from "@/components/demo/empleados/Empleados";
 import Operaciones from "@/components/demo/operaciones/Operaciones";
@@ -63,6 +64,32 @@ export default function DemoPage() {
   const [tipoPanel, setTipoPanel] = useState<"empresario" | "empleado">("empresario");
   const [accionesAbiertas, setAccionesAbiertas] = useState(false);
 
+  const abrirModulo = (modulo: string, origen: string = "menu") => {
+    setActive(modulo);
+
+    void trackEvent("demo_module", {
+      element: modulo,
+      metadata: {
+        modulo,
+        origen,
+        panel: tipoPanel,
+      },
+    });
+  };
+
+  const cambiarPanel = (panel: "empresario" | "empleado") => {
+    setTipoPanel(panel);
+
+    void trackEvent("demo_module", {
+      element: panel === "empresario" ? "Panel empresario" : "Panel empleado",
+      metadata: {
+        modulo: panel === "empresario" ? "Panel empresario" : "Panel empleado",
+        origen: "selector_panel",
+        panel,
+      },
+    });
+  };
+
   return (
     <div className="min-h-screen bg-[#f6f8fc] text-slate-900">
       <div className="flex min-h-screen">
@@ -83,7 +110,7 @@ export default function DemoPage() {
             {menu.map(([icon, label]) => (
               <button
                 key={label}
-                onClick={() => setActive(label)}
+                onClick={() => abrirModulo(label, "menu")}
                 className={`mb-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition ${
                   active === label
                     ? "bg-blue-50 font-semibold text-blue-700"
@@ -121,7 +148,7 @@ export default function DemoPage() {
             <div className="flex items-center gap-3">
               <div className="hidden items-center rounded-xl bg-slate-100 p-1 md:flex">
                 <button
-                  onClick={() => setTipoPanel("empresario")}
+                  onClick={() => cambiarPanel("empresario")}
                   className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
                     tipoPanel === "empresario"
                       ? "bg-white text-slate-900 shadow-sm"
@@ -132,7 +159,7 @@ export default function DemoPage() {
                 </button>
 
                 <button
-                  onClick={() => setTipoPanel("empleado")}
+                  onClick={() => cambiarPanel("empleado")}
                   className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
                     tipoPanel === "empleado"
                       ? "bg-white text-violet-700 shadow-sm"
@@ -155,7 +182,7 @@ export default function DemoPage() {
           <div className="p-5 md:p-8">
             <div className="mb-5 grid grid-cols-2 rounded-xl bg-slate-200/70 p-1 md:hidden">
               <button
-                onClick={() => setTipoPanel("empresario")}
+                onClick={() => cambiarPanel("empresario")}
                 className={`rounded-lg px-3 py-2 text-xs font-semibold ${
                   tipoPanel === "empresario"
                     ? "bg-white shadow-sm"
@@ -165,7 +192,7 @@ export default function DemoPage() {
                 Empresario
               </button>
               <button
-                onClick={() => setTipoPanel("empleado")}
+                onClick={() => cambiarPanel("empleado")}
                 className={`rounded-lg px-3 py-2 text-xs font-semibold ${
                   tipoPanel === "empleado"
                     ? "bg-white text-violet-700 shadow-sm"
@@ -194,7 +221,7 @@ export default function DemoPage() {
                 {menu.map(([icon, label]) => (
                   <button
                     key={label}
-                    onClick={() => setActive(label)}
+                    onClick={() => abrirModulo(label, "menu")}
                     className={`flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-semibold transition ${
                       active === label
                         ? "border-blue-200 bg-blue-600 text-white shadow-sm"
@@ -278,7 +305,7 @@ export default function DemoPage() {
                           <button
                             key={label}
                             onClick={() => {
-                              setActive(destino);
+                              abrirModulo(destino, "crear_accion");
                               setAccionesAbiertas(false);
                             }}
                             className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition hover:bg-slate-50"
@@ -339,7 +366,7 @@ export default function DemoPage() {
                     ].map(([icon, title, description, destino]) => (
                       <button
                         key={title}
-                        onClick={() => setActive(destino)}
+                        onClick={() => abrirModulo(destino, "centro_control")}
                         className="group flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50"
                       >
                         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-lg shadow-sm transition group-hover:bg-blue-600 group-hover:text-white">

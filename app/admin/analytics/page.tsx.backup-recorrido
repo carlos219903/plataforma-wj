@@ -1,0 +1,334 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+
+type Sesion = {
+  id: string;
+  session_id: string;
+  visitante_id: string;
+  origen: string | null;
+  campana: string | null;
+  referencia: string | null;
+  primera_pagina: string | null;
+  ultima_pagina: string | null;
+  dispositivo: string | null;
+  inicio: string;
+  ultima_actividad: string;
+  total_eventos: number;
+  vio_demo: boolean;
+  llego_formulario: boolean;
+  envio_formulario: boolean;
+  inicio_pago: boolean;
+  convertido: boolean;
+  visitantes: {
+    numero_visitante: number;
+    visitor_id: string;
+  } | null;
+};
+
+function duracion(inicio: string, fin: string) {
+  const segundos = Math.max(
+    0,
+    Math.round(
+      (new Date(fin).getTime() - new Date(inicio).getTime()) / 1000
+    )
+  );
+
+  if (segundos < 60) return `${segundos}s`;
+
+  const minutos = Math.floor(segundos / 60);
+  const resto = segundos % 60;
+
+  return `${minutos}m ${resto}s`;
+}
+
+function fecha(value: string) {
+  return new Intl.DateTimeFormat("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(new Date(value));
+}
+
+function Estado({
+  activo,
+  texto,
+}: {
+  activo: boolean;
+  texto: string;
+}) {
+  return (
+    <span
+      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+        activo
+          ? "bg-emerald-50 text-emerald-700"
+          : "bg-slate-100 text-slate-400"
+      }`}
+    >
+      {activo ? "✓ " : "— "}
+      {texto}
+    </span>
+  );
+}
+
+export default function AdminAnalyticsPage() {
+  const router = useRouter();
+
+  const [sesiones, setSesiones] = useState<Sesion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  async function cargar() {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch("/api/admin/analytics", {
+        cache: "no-store",
+      });
+
+      if (response.status === 401) {
+        router.replace("/admin/login");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error("No se pudieron cargar los datos");
+      }
+
+      const data = await response.json();
+
+      setSesiones(data.sesiones || []);
+    } catch {
+      setError("No se pudieron cargar las estadísticas.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    cargar();
+  }, []);
+
+  const resumen = useMemo(() => {
+    const visitantes = new Set(
+      sesiones.map((s) => s.visitantes?.numero_visitante).filter(Boolean)
+    );
+
+    return {
+      visitantes: visitantes.size,
+      sesiones: sesiones.length,
+      demo: sesiones.filter((s) => s.vio_demo).length,
+      formularios: sesiones.filter((s) => s.llego_formulario).length,
+      conversiones: sesiones.filter((s) => s.convertido).length,
+    };
+  }, [sesiones]);
+
+  async function cerrarSesion() {
+    await fetch("/api/admin/logout", {
+      method: "POST",
+    });
+
+    router.replace("/admin/login");
+  }
+
+  return (
+    <main className="min-h-screen bg-[#f5f7fb] text-slate-900">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-5 md:px-8">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-600">
+              GroupW&J
+            </p>
+
+            <h1 className="mt-1 text-2xl font-bold">
+              Analítica comercial
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={cargar}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold hover:bg-slate-50"
+            >
+              Actualizar
+            </button>
+
+            <button
+              onClick={cerrarSesion}
+              className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-[1500px] px-5 py-8 md:px-8">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold tracking-tight">
+            Visitantes y conversiones
+          </h2>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Seguimiento de llamadas, emails, demo, formularios y ventas.
+          </p>
+        </div>
+
+        <section className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          {[
+            ["Visitantes", resumen.visitantes],
+            ["Sesiones", resumen.sesiones],
+            ["Vieron demo", resumen.demo],
+            ["Formulario", resumen.formularios],
+            ["Conversiones", resumen.conversiones],
+          ].map(([titulo, valor]) => (
+            <div
+              key={titulo}
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+              <p className="text-sm font-medium text-slate-500">
+                {titulo}
+              </p>
+
+              <p className="mt-2 text-3xl font-bold">
+                {valor}
+              </p>
+            </div>
+          ))}
+        </section>
+
+        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-200 px-5 py-5">
+            <h3 className="font-bold">Actividad reciente</h3>
+
+            <p className="mt-1 text-sm text-slate-500">
+              Últimas sesiones registradas en GroupW&J.
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="p-10 text-center text-slate-500">
+              Cargando estadísticas...
+            </div>
+          ) : error ? (
+            <div className="p-10 text-center text-red-600">
+              {error}
+            </div>
+          ) : sesiones.length === 0 ? (
+            <div className="p-10 text-center text-slate-500">
+              Todavía no hay sesiones registradas.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[1150px] text-left">
+                <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th className="px-5 py-4">Visitante</th>
+                    <th className="px-5 py-4">Referencia</th>
+                    <th className="px-5 py-4">Origen</th>
+                    <th className="px-5 py-4">Entrada</th>
+                    <th className="px-5 py-4">Duración</th>
+                    <th className="px-5 py-4">Eventos</th>
+                    <th className="px-5 py-4">Embudo</th>
+                    <th className="px-5 py-4">Dispositivo</th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-slate-100">
+                  {sesiones.map((sesion) => (
+                    <tr
+                      key={sesion.id}
+                      className="transition hover:bg-slate-50"
+                    >
+                      <td className="px-5 py-5">
+                        <div className="font-bold text-blue-700">
+                          #{sesion.visitantes?.numero_visitante ?? "?"}
+                        </div>
+
+                        <div className="mt-1 max-w-[130px] truncate text-xs text-slate-400">
+                          {sesion.session_id}
+                        </div>
+                      </td>
+
+                      <td className="px-5 py-5">
+                        <div className="font-semibold">
+                          {sesion.referencia || "Sin referencia"}
+                        </div>
+
+                        <div className="mt-1 text-xs text-slate-400">
+                          {sesion.campana || "Sin campaña"}
+                        </div>
+                      </td>
+
+                      <td className="px-5 py-5">
+                        <span className="rounded-lg bg-blue-50 px-2.5 py-1.5 text-xs font-bold text-blue-700">
+                          {sesion.origen || "directo"}
+                        </span>
+                      </td>
+
+                      <td className="px-5 py-5">
+                        <div className="text-sm font-medium">
+                          {fecha(sesion.inicio)}
+                        </div>
+
+                        <div className="mt-1 text-xs text-slate-400">
+                          {sesion.primera_pagina || "/"}
+                        </div>
+                      </td>
+
+                      <td className="px-5 py-5 font-semibold">
+                        {duracion(
+                          sesion.inicio,
+                          sesion.ultima_actividad
+                        )}
+                      </td>
+
+                      <td className="px-5 py-5">
+                        <span className="text-lg font-bold">
+                          {sesion.total_eventos}
+                        </span>
+                      </td>
+
+                      <td className="px-5 py-5">
+                        <div className="flex max-w-[300px] flex-wrap gap-1.5">
+                          <Estado
+                            activo={sesion.vio_demo}
+                            texto="Demo"
+                          />
+
+                          <Estado
+                            activo={sesion.llego_formulario}
+                            texto="Formulario"
+                          />
+
+                          <Estado
+                            activo={sesion.inicio_pago}
+                            texto="Pago"
+                          />
+
+                          <Estado
+                            activo={sesion.convertido}
+                            texto="Cliente"
+                          />
+                        </div>
+                      </td>
+
+                      <td className="px-5 py-5 capitalize text-slate-600">
+                        {sesion.dispositivo || "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </div>
+    </main>
+  );
+}
