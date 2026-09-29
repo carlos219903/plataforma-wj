@@ -31,7 +31,7 @@ export default function AdminLoginPage() {
         return;
       }
 
-      window.location.replace("/admin/analytics");
+      window.location.replace("/analisisdecontacto");
       return;
     } catch {
       setError("No se pudo conectar con el servidor");
